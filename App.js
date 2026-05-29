@@ -21,13 +21,13 @@ export default function App() {
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{ title: 'Smart Home IoT' }}
+          options={{ title: 'Home' }}
         />
 
         <Stack.Screen
           name="History"
           component={HistoryScreen}
-          options={{ title: 'Histórico MQTT' }}
+          options={{ title: 'Histórico' }}
         />
 
       </Stack.Navigator>
