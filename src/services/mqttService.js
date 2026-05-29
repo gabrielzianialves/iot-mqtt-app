@@ -30,7 +30,7 @@ export default class MQTTService {
             onSuccess: onConnect,
             onFailure: onFailure,
             timeout: 3,
-            keepAliveInternal: 60,
+            keepAliveInterval: 60,
         };
 
         this.client.connect(options);
