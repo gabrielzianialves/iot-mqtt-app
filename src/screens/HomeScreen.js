@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
-
 import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
 import MQTTService from '../services/mqttService';
 import StatusModal from '../components/StatusModal';
 import LightControl from '../components/LightControl';
@@ -14,9 +12,7 @@ export default function HomeScreen({ navigation }) {
 
   const [isConnected, setIsConnected] = useState(false);
   const [showError, setShowError] = useState(false);
-  const [isLightOn, setIsLightOn] = useState(false);
-  const [temp, setTemp] = useState(0);
-  const [hum, setHum] = useState(0);
+  const [sensorData, setSensorData] = useState({temp: 0, hum: 0, light: false});
 
   const mqttConfig = {
     host: process.env.EXPO_PUBLIC_MQTT_HOST,
@@ -64,9 +60,11 @@ export default function HomeScreen({ navigation }) {
 
         if (history.length > 0) {
           const latest = history[0];
-          setTemp(latest.temp);
-          setHum(latest.hum);
-          setIsLightOn(latest.light);
+          setSensorData({
+            temp: latest.temp,
+            hum: latest.hum,
+            light: latest.light
+          });
         }
       }
 
@@ -77,34 +75,37 @@ export default function HomeScreen({ navigation }) {
   };
 
   const startConnection = () => {
-
     setShowError(false);
-
     mqtt.connect(
-
       mqttConfig,
-
       (topic, message) => {
 
-        let newTemp = temp;
-        let newHum = hum;
-        let newLight = isLightOn;
-
-        if (topic === 'casa/temp') {
-          newTemp = parseFloat(message);
-          setTemp(newTemp);
-        }
-
-        if (topic === 'casa/umid') {
-          newHum = parseFloat(message);
-          setHum(newHum);
-        }
-
-        if (topic === 'casa/luz') {
-          newLight = message === '1';
-          setIsLightOn(newLight);
-        }
-        saveData(newTemp, newHum, newLight);
+        setSensorData((prevData) => {
+      
+          const updatedData = {
+            ...prevData
+          };
+      
+          if (topic === 'casa/temp') {
+            updatedData.temp = parseFloat(message);
+          }
+      
+          if (topic === 'casa/umid') {
+            updatedData.hum = parseFloat(message);
+          }
+      
+          if (topic === 'casa/luz') {
+            updatedData.light = message === '1';
+          }
+      
+          saveData(
+            updatedData.temp,
+            updatedData.hum,
+            updatedData.light
+          );
+      
+          return updatedData;
+        });
       },
 
       () => {
@@ -122,7 +123,7 @@ export default function HomeScreen({ navigation }) {
   };
 
   const toggleLight = () => {
-    const newState = isLightOn ? '0' : '1';
+    const newState = sensorData.light ? '0' : '1';
     mqtt.publish('casa/luz', newState);
   };
 
@@ -133,13 +134,13 @@ export default function HomeScreen({ navigation }) {
       <Text style={styles.header}>Smart Home IoT</Text>
 
       <LightControl
-        isLightOn={isLightOn}
+        isLightOn={sensorData.light}
         onToggle={toggleLight}
       />
 
       <Gauges
-        temp={temp}
-        hum={hum}
+        temp={sensorData.temp}
+        hum={sensorData.hum}
       />
 
       <TouchableOpacity
