@@ -142,13 +142,22 @@ export default function HomeScreen({ navigation }) {
         temp={sensorData.temp}
         hum={sensorData.hum}
       />
-
-      <TouchableOpacity
+      
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity
         style={styles.historyButton}
         onPress={() => navigation.navigate('History')}
-      >
-        <Text style={styles.buttonText}>Ver Histórico</Text>
-      </TouchableOpacity>
+        >
+          <Text style={styles.buttonText}>Ver Histórico</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.dashboardButton}
+          onPress={() => navigation.navigate('Dashboard')}
+        >
+          <Text style={styles.buttonText}>Ver Dashboard</Text>
+        </TouchableOpacity>
+      </View>
 
       <StatusModal
         visible={showError}
@@ -177,12 +186,27 @@ const styles = StyleSheet.create({
     marginBottom: 20
   },
 
+  buttonsContainer: {
+    width: '100%',
+    marginTop: 25,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+
+  dashboardButton: {
+    backgroundColor: '#3498DB',
+    padding: 15,
+    borderRadius: 12,
+    marginTop: 25,
+    width: '48%',
+  },
+
   historyButton: {
     backgroundColor: '#3498DB',
     padding: 15,
     borderRadius: 12,
     marginTop: 25,
-    width: '100%',
+    width: '48%',
   },
 
   buttonText: {
