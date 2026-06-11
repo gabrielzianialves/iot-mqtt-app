@@ -51,6 +51,26 @@ export default function HomeScreen({ navigation }) {
     }
   };
 
+  const saveSensorHistory = async (key, value) => {
+    try {
+      const newData = {
+        id: Date.now(),
+        value,
+        timestamp: new Date().toISOString()
+      };
+
+      const existing = await AsyncStorage.getItem(key);
+      let history = existing ? JSON.parse(existing) : [];
+      history.unshift(newData);
+
+      await AsyncStorage.setItem(key, JSON.stringify(history));
+
+    }
+    catch (error) {
+      console.log(error);
+    }
+  };
+
   const loadSavedData = async () => {
     try{
       const saved = await AsyncStorage.getItem('@iot_history');
@@ -87,15 +107,30 @@ export default function HomeScreen({ navigation }) {
           };
       
           if (topic === 'casa/temp') {
-            updatedData.temp = parseFloat(message);
+            const value = parseFloat(message);
+
+            if (value !== prevData.temp) {
+              updatedData.temp = value;
+              saveSensorHistory('@temp_history', value);
+            }
           }
       
           if (topic === 'casa/umid') {
-            updatedData.hum = parseFloat(message);
+            const value = parseFloat(message);
+
+            if (value !== prevData.hum) {
+              updatedData.hum = value;
+              saveSensorHistory('@hum_history', value);
+            }
           }
       
           if (topic === 'casa/luz') {
-            updatedData.light = message === '1';
+            const value = message === '1';
+
+            if (value !== prevData.light) {
+              updatedData.light = value;
+              saveSensorHistory('@light_history', value);
+            }
           }
       
           saveData(
