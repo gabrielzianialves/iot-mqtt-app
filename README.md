@@ -4,6 +4,8 @@ Aplicativo desenvolvido em React Native com Expo para monitoramento e controle d
 
 Link do vídeo de explicação: https://youtu.be/rWgYzATC_gc
 
+PARTE 2 (DASHBOARD): https://youtu.be/8lmAEaUpwhc
+
 ---
 
 ## Funcionalidades
