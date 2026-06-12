@@ -122,6 +122,7 @@ src/
 │
 ├── screens/
 │   ├── HomeScreen.js
+│   ├── DashboardScreen.js
 │   └── HistoryScreen.js
 │
 ├── services/
